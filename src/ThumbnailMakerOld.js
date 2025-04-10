@@ -1,93 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useImperativeHandle, forwardRef } from "react";
 import { fetchTournamentData } from './getTournamentData';
 import { loadCustomFont } from "./utils/fontLoader";
 import { drawCenteredText, fitTextToWidth } from "./utils/fitTextToWidth";
 
-const MatchInputCard = ({
-    index,
-    partOfBracket,
-    setPartOfBracket,
-    player1Name,
-    setPlayer1Name,
-    selectedOption1,
-    setSelectedOption1,
-    player2Name,
-    setPlayer2Name,
-    selectedOption2,
-    setSelectedOption2
-  }) => {
-    return (
-      <div style={{ border: "1px solid #ccc", padding: "10px", borderRadius: "10px" }}>
-        <label htmlFor={`partOfBracketInput-${index}`}>Part of bracket:</label>
-        <input
-          id={`partOfBracketInput-${index}`}
-          type="text"
-          value={partOfBracket}
-          onChange={(e) => setPartOfBracket(e.target.value)}
-          placeholder="Enter part of bracket"
-          style={{ marginLeft: "10px", padding: "5px", width: "250px" }}
-        />
-        <br />
-        <label htmlFor={`player1NameInput-${index}`}>Player 1 name:</label>
-        <input
-          id={`player1NameInput-${index}`}
-          type="text"
-          value={player1Name}
-          onChange={(e) => setPlayer1Name(e.target.value)}
-          placeholder="Enter player 1 name"
-          style={{ marginLeft: "10px", padding: "5px", width: "250px" }}
-        />
-        <select
-          value={selectedOption1}
-          onChange={(e) => setSelectedOption1(e.target.value)}
-          style={{ marginLeft: "10px" }}
-        >
-          <option value="">-- Select --</option>
-          <option value="SF6_Cammy">Cammy</option>
-          <option value="SF6_Guile">Guile</option>
-          <option value="SF6_Ryu">Ryu</option>
-          <option value="SF6_Zangief">Zangief</option>
-        </select>
-        <br />
-        <label htmlFor={`player2NameInput-${index}`}>Player 2 name:</label>
-        <input
-          id={`player2NameInput-${index}`}
-          type="text"
-          value={player2Name}
-          onChange={(e) => setPlayer2Name(e.target.value)}
-          placeholder="Enter player 2 name"
-          style={{ marginLeft: "10px", padding: "5px", width: "250px" }}
-        />
-        <select
-          value={selectedOption2}
-          onChange={(e) => setSelectedOption2(e.target.value)}
-          style={{ marginLeft: "10px" }}
-        >
-          <option value="">-- Select --</option>
-          <option value="SF6_Cammy">Cammy</option>
-          <option value="SF6_Guile">Guile</option>
-          <option value="SF6_Ryu">Ryu</option>
-          <option value="SF6_Zangief">Zangief</option>
-        </select>
-      </div>
-    );
-  };
 
-
-const ThumbnailMaker = () => {
-    const [matches, setMatches] = useState(
-        Array.from({ length: 10 }).map(() => ({
-          partOfBracket: "",
-          player1Name: "",
-          selectedOption1: "",
-          player2Name: "",
-          selectedOption2: ""
-        }))
-    );
-
-
-    const [selectedOption1, setSelectedOption1] = useState("");
-    const [selectedOption2, setSelectedOption2] = useState("");
+const ThumbnailMakerOld = (props, ref) => {
+    const [selectedOption1, setSelectedOption1] = useState("SF6_Cammy");
+    const [selectedOption2, setSelectedOption2] = useState("SF6_Guile");
     //const [imageSrc1, setImageSrc1] = useState("");
     //const [imageSrc2, setImageSrc2] = useState("");
     const canvasRef = useRef(null);
@@ -102,14 +21,12 @@ const ThumbnailMaker = () => {
     const [player2Name, setPlayer2Name] = useState("Player 2");  // Player 2 name
     
 
-    
     const imageMap = {
         "SF6_Cammy": "/images/SF6_Cammy_60.png",
         "SF6_Guile": "/images/SF6_Guile_Small.png",
         "SF6_Ryu": "/images/SF6_Ryu_Small.png",
         "SF6_Zangief": "/images/SF6_Zangief_Small.png"
     };
-    
     
     const backgroundImage = "/images/YTThumbnailBackground.png";
     const foregroundImage = "/images/YTThumbnailFrontground.png";
@@ -182,6 +99,12 @@ const ThumbnailMaker = () => {
         link.href = canvas.toDataURL("image/png");
         link.click();
     }
+
+
+    useImperativeHandle(ref, () => ({
+        generateThumbnail: handleConfirm,
+        getCanvasDataURL: () => canvasRef.current?.toDataURL("image/png")
+    }));
 
 
     return (
@@ -270,4 +193,5 @@ const ThumbnailMaker = () => {
 
 }
 
-export default ThumbnailMaker;
+export default forwardRef(ThumbnailMakerOld);
+//export default ThumbnailMakerOld;
