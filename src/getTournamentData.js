@@ -50,4 +50,4 @@ export const fetchTournamentData = async (tournamentId) => {
 
   
   // Call the function with a specific tournament ID (replace with a valid tournament ID)
-  fetchTournamentData('2453122'); // Replace 'TOURNAMENT_ID' with an actual tournament ID
+  //fetchTournamentData('2453122'); // Replace 'TOURNAMENT_ID' with an actual tournament ID

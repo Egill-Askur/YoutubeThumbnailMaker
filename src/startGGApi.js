@@ -23,7 +23,6 @@ export async function fetchStartGGData(query, variables = {}) {
   const json = await response.json();
 
   if (json.errors) {
-    //console.error("Start.gg API Error:", json.errors);
     console.error("Start.gg API Error:", JSON.stringify(json.errors, null, 2));
     throw new Error("Failed to fetch start.gg data");
   }
@@ -32,31 +31,6 @@ export async function fetchStartGGData(query, variables = {}) {
 }
 
 export async function getTop8Sets(tournamentSlug) {
-    
-    /*const query = `
-    query GetTop8Sets($slug: String!) {
-    tournament(slug: $slug) {
-        name
-        events {
-          name
-          sets(perPage: 8, page: 1) {
-            nodes {
-              fullRoundText
-              slots {
-                entrant {
-                  name
-                  participants {
-                    gamerTag
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }`
-
-    */
    const query = `
     query EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {
         event(id: $eventId) {
@@ -85,18 +59,6 @@ export async function getTop8Sets(tournamentSlug) {
     },`
 
     const variables = { slug: tournamentSlug };
-    /*
-
-    const data = await fetchStartGGData(query, variables);
-
-    return data.tournament.events[0].sets.nodes.map(set => ({
-        partOfBracket: set.fullRoundText,
-        player1Name: set.slots[0]?.entrant?.name || "Unknown",
-        player2Name: set.slots[1]?.entrant?.name || "Unknown",
-        character1: "SF6_Ryu", // Placeholder: map based on known player-character mapping
-        character2: "SF6_Guile"
-    }));
-    */
 
     try {
         // Fetch data from the API
