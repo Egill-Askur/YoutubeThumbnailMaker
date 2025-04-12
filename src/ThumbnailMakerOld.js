@@ -48,10 +48,10 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
             setPlayer2Name(data.games[0].selections[1].entrant.name || "Unknown");
             setSelectedCharacter1(striveCharacterMap[data.games[0].selections[0].selectionValue] || "Unknown Character")
             setSelectedCharacter2(striveCharacterMap[data.games[0].selections[1].selectionValue] || "Unknown Character")
-            console.log("Player 1 character:", selectedCharacter1)
-            console.log("Player 2 character:", selectedCharacter2)
+            //console.log("Player 1 character:", selectedCharacter1)
+            //console.log("Player 2 character:", selectedCharacter2)
             setTournamentName(tName || "Tournament name");
-            console.log("Tournament name:", useInput)
+            console.log("Tournament name:", tName)
             setTournamentDate(tDate || "Tournament date");
             if (data.fullRoundText === "Losers Round 1") {
                 setPartOfBracket("Losers Eighths");
@@ -68,7 +68,7 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
         handleConfirm();
         setDataReady(false); // reset for future updates
     }
-    }, [player1Name, player2Name, tournamentName, tournamentDate, partOfBracket, selectedCharacter1, selectedCharacter2]);
+    }, [player1Name, player2Name, tournamentName, tournamentDate, partOfBracket, selectedCharacter1, selectedCharacter2, dataReady]);
     
     const loadImage = (src) => {
         return new Promise((resolve, reject) => {
@@ -87,7 +87,6 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
         try {
             let imagePath1 = `/images/${gamePlayed}/${selectedCharacter1}.png`
             let imagePath2 = `/images/${gamePlayed}/${selectedCharacter2}.png`
-            console.log("Current path:", imagePath1)
             const [imgBG, img1, img2, imgFG] = await Promise.all([
                 loadImage(backgroundImage),
                 loadImage(imagePath1),

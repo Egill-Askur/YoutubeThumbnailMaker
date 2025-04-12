@@ -56,7 +56,7 @@ function App() {
       const top8SetsByPhaseID = top8ByPhaseID.phase.sets.nodes;
       console.log("Sets recieved by top 8 ID:", top8SetsByPhaseID)
 
-
+      // Make sure True Grand Finals (Grand Finals Reset) doesn't get a thumbnail
       const top8Sets = top8SetsByPhaseID.filter(set => top8SetNames.includes(set.fullRoundText));
       
       top8Sets.forEach((top8Sets, i) => {
