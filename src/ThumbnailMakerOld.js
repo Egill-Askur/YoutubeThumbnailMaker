@@ -9,8 +9,8 @@ import { useInput } from "./inputContext";
 const ThumbnailMakerOld = forwardRef((props, ref) => {
     
     const [dataReady, setDataReady] = useState(false);
-    const [selectedCharacter1, setSelectedCharacter1] = useState("SF6_Cammy");
-    const [selectedCharacter2, setSelectedCharacter2] = useState("SF6_Guile");
+    const [selectedCharacter1, setSelectedCharacter1] = useState("Anji_Mito");
+    const [selectedCharacter2, setSelectedCharacter2] = useState("Anji_Mito");
     //const [imageSrc1, setImageSrc1] = useState("");
     //const [imageSrc2, setImageSrc2] = useState("");
     const canvasRef = useRef(null);
