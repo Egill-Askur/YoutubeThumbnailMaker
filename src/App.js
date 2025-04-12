@@ -1,16 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
+import { InputProvider } from "./inputContext";
+import InputField from "./inputField";
 //import ThumbnailMaker from "./ThumbnailMaker";
 import ThumbnailMakerOld from "./ThumbnailMakerOld";
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { getId, getPhaseID, getSets, getSetsByPhaseID, getTop8Sets } from "./startGGApi";
 
+/*
 // Type for the ref methods
 type ThumbnailMakerOldRef = {
   generateThumbnail: () => void;
   getCanvasDataURL: () => string | undefined;
   setDataFromApi: (data: any) => void;
 };
+*/
+
 
 console.log("Logging works");
 function App() {
@@ -183,35 +188,40 @@ function App() {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Thumbnail generator</h1>
+    <InputProvider>
+      <div style={{ padding: "20px" }}>
+        <h1>Thumbnail generator</h1>
 
-      <input
-        type="text"
-        value={tournamentSlug}
-        onChange={(e) => setTournamentSlug(e.target.value)}
-        placeholder="Paste tournament URL or slug (e.g., tournament/nidhoggur-2025)"
-        style={{ width: "400px", padding: "8px"}}
-      />
+        <input
+          type="text"
+          value={tournamentSlug}
+          onChange={(e) => setTournamentSlug(e.target.value)}
+          placeholder="Paste tournament URL or slug (e.g., tournament/nidhoggur-2025)"
+          style={{ width: "400px", padding: "8px"}}
+        />
 
-      <button onClick={handleFetchTournamentData} disabled={loading} style={{ marginLeft: "10px" }}>
-        {loading ? "Loading..." : "Fetch Data & Generate Thumbnails"}
-      </button>
+        <button onClick={handleFetchTournamentData} disabled={loading} style={{ marginLeft: "10px" }}>
+          {loading ? "Loading..." : "Fetch Data & Generate Thumbnails"}
+        </button>
 
-      <button onClick={handleGenerateThumbnails} disabled={loading} style={{ marginLeft: "10px" }}>
-        {loading ? "Loading..." : "Generate Thumbnails"}
-      </button>
+        <button onClick={handleGenerateThumbnails} disabled={loading} style={{ marginLeft: "10px" }}>
+          {loading ? "Loading..." : "Generate Thumbnails"}
+        </button>
 
-      <br /> <br />
-      <button onClick={downloadAllThumbnailsAsZip}>Download all thumbnails</button>
+        <br /> <br />
+        <InputField />
 
-      <hr />
+        <br /> <br />
+        <button onClick={downloadAllThumbnailsAsZip}>Download all thumbnails</button>
 
-      {Array.from({ length: thumbnailCount }).map((_, i) => (
-        <ThumbnailMakerOld key={i} ref={(el) => (refsArray.current[i] = el)} />
-      ))}
+        <hr />
 
-    </div>
+        {Array.from({ length: thumbnailCount }).map((_, i) => (
+          <ThumbnailMakerOld key={i} ref={(el) => (refsArray.current[i] = el)} />
+        ))}
+
+      </div>
+    </InputProvider>
   )
 
   /*

@@ -3,6 +3,7 @@ import { fetchTournamentData } from './getTournamentData';
 import { loadCustomFont } from "./utils/fontLoader";
 import { drawCenteredText, fitTextToWidth } from "./utils/fitTextToWidth";
 import striveCharacterMap from './characterMaps/GGSTCharacterMap';
+import { useInput } from "./inputContext";
 
 
 const ThumbnailMakerOld = forwardRef((props, ref) => {
@@ -14,6 +15,7 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
     //const [imageSrc2, setImageSrc2] = useState("");
     const canvasRef = useRef(null);
     //console.log(fetchTournamentData('2453122'));
+    const { inputValue, inputValue2 } = useInput();
 
     //const [canvasWidth, setCanvasWidth] = useState(1280);  // Thumbnail width
     //const [canvasHeight, setCanvasHeight] = useState(720);  // Thumbnail height
@@ -41,6 +43,8 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
 
     
     let fontSize = 70;
+    let tName = inputValue
+    let tDate = inputValue2
 
     useImperativeHandle(ref, () => ({
         generateThumbnail: handleConfirm,
@@ -53,8 +57,11 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
             setSelectedCharacter2(striveCharacterMap[data.games[0].selections[1].selectionValue] || "Unknown Character")
             console.log("Player 1 character:", selectedCharacter1)
             console.log("Player 2 character:", selectedCharacter2)
-            setTournamentName(data.tournamentName || "Untitled");
-            setTournamentDate(data.tournamentDate || "Date TBD");
+            //setTournamentName(data.tournamentName || "Untitled");
+            setTournamentName(tName || "Tournament name");
+            console.log("Tournament name:", useInput)
+            //setTournamentDate(data.tournamentDate || "Date TBD");
+            setTournamentDate(tDate || "Tournament date");
             if (data.fullRoundText === "Losers Round 1") {
                 setPartOfBracket("Losers Eighths");
             }
@@ -120,8 +127,8 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
             ctx.drawImage(imgBG, 0, 0, canvas.width, canvasHeight);
             //ctx.drawImage(img1, -75, 100);  // Left character
             //ctx.drawImage(img2, 675, 100);  // Right character
-            ctx.drawImage(img1, -175, 125, scaledWidth1, scaledHeight1);  // Left character (scaled)
-            ctx.drawImage(img2, 630, 125, scaledWidth2, scaledHeight2);  // Right character (scaled)
+            ctx.drawImage(img1, -175, 100, scaledWidth1, scaledHeight1);  // Left character (scaled)
+            ctx.drawImage(img2, 630, 100, scaledWidth2, scaledHeight2);  // Right character (scaled)
             ctx.drawImage(imgFG, 0, 0, canvas.width, canvas.height);  // Overlay
 
             ctx.fillStyle = 'black';
@@ -173,6 +180,7 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
 
     
 
+    const characterNames = Object.values(striveCharacterMap);
 
     return (
         <div>
@@ -224,13 +232,23 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
                 placeholder="Enter player 1 name"
                 style={{ marginLeft: "10px", padding: "5px", width: "250px" }}
             />
-            <select //value={testVariable}
+            
+            {/*<select //value={testVariable}
             onChange={(e) => setSelectedCharacter1(e.target.value)}>
                 <option value="">-- Select --</option>
                 <option value="SF6_Cammy">Cammy</option>
                 <option value="SF6_Guile">Guile</option>
                 <option value="SF6_Ryu">Ryu</option>
                 <option value="SF6_Zangief">Zangief</option>
+            </select>
+            */}
+
+            <select value={selectedCharacter1} onChange={(e) => setSelectedCharacter1(e.target.value)}>
+                {characterNames.map((name) => (
+                    <option key={name} value={name}>
+                        {name.replace(/_/g, ' ')}
+                    </option>
+                ))}
             </select>
 
             <br/>
@@ -244,12 +262,21 @@ const ThumbnailMakerOld = forwardRef((props, ref) => {
                 placeholder="Enter player 2 name"
                 style={{ marginLeft: "10px", padding: "5px", width: "250px" }}
             />
+            {/*}
             <select onChange={(e) => setSelectedCharacter2(e.target.value)}>
                 <option value="">-- Select --</option>
                 <option value="SF6_Cammy">Cammy</option>
                 <option value="SF6_Guile">Guile</option>
                 <option value="SF6_Ryu">Ryu</option>
                 <option value="SF6_Zangief">Zangief</option>
+            </select>
+            */}
+            <select value={selectedCharacter2} onChange={(e) => setSelectedCharacter2(e.target.value)}>
+                {characterNames.map((name) => (
+                    <option key={name} value={name}>
+                        {name.replace(/_/g, ' ')}
+                    </option>
+                ))}
             </select>
 
         </div>
