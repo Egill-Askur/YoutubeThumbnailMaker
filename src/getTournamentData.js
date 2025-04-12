@@ -16,8 +16,8 @@ export const fetchTournamentData = async (tournamentId) => {
       }
     `;
   
-    const apiKey = process.env.STARTGG_KEY;; // Replace this with your start.gg API key
-    const url = 'https://api.start.gg/gql';
+    const apiKey = '14a2710f9d824b419546764d6813de84';; // Replace this with your start.gg API key
+    const url = 'https://api.start.gg/gql/alpha';
   
     try {
       const response = await fetch(url, {

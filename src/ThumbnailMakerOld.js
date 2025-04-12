@@ -1,37 +1,76 @@
-import React, { useState, useRef, useImperativeHandle, forwardRef } from "react";
+import React, { useState, useRef, useImperativeHandle, forwardRef, useEffect } from "react";
 import { fetchTournamentData } from './getTournamentData';
 import { loadCustomFont } from "./utils/fontLoader";
 import { drawCenteredText, fitTextToWidth } from "./utils/fitTextToWidth";
+import striveCharacterMap from './characterMaps/GGSTCharacterMap';
 
 
-const ThumbnailMakerOld = (props, ref) => {
-    const [selectedOption1, setSelectedOption1] = useState("SF6_Cammy");
-    const [selectedOption2, setSelectedOption2] = useState("SF6_Guile");
+const ThumbnailMakerOld = forwardRef((props, ref) => {
+    
+    const [dataReady, setDataReady] = useState(false);
+    const [selectedCharacter1, setSelectedCharacter1] = useState("SF6_Cammy");
+    const [selectedCharacter2, setSelectedCharacter2] = useState("SF6_Guile");
     //const [imageSrc1, setImageSrc1] = useState("");
     //const [imageSrc2, setImageSrc2] = useState("");
     const canvasRef = useRef(null);
     //console.log(fetchTournamentData('2453122'));
 
-    const [canvasWidth, setCanvasWidth] = useState(1280);  // Thumbnail width
-    const [canvasHeight, setCanvasHeight] = useState(720);  // Thumbnail height
+    //const [canvasWidth, setCanvasWidth] = useState(1280);  // Thumbnail width
+    //const [canvasHeight, setCanvasHeight] = useState(720);  // Thumbnail height
     const [tournamentName, setTournamentName] = useState("Níðhöggur");  // Tournament name
     const [tournamentDate, setTournamentDate] = useState("Mars 4th 2025");  // Tournament date
     const [partOfBracket, setPartOfBracket] = useState("Loser Top 8");  // Part of bracket
     const [player1Name, setPlayer1Name] = useState("Player 1");  // Player 1 name
     const [player2Name, setPlayer2Name] = useState("Player 2");  // Player 2 name
+    const [gamePlayed, setGamePlayed] = useState("GGST")    // Name of game played
     
 
     const imageMap = {
-        "SF6_Cammy": "/images/SF6_Cammy_60.png",
+        "SF6_Cammy": "/images/GGST_Ky_Kiske.png",
         "SF6_Guile": "/images/SF6_Guile_Small.png",
         "SF6_Ryu": "/images/SF6_Ryu_Small.png",
         "SF6_Zangief": "/images/SF6_Zangief_Small.png"
     };
     
+    //const canvasWidth = 1280;
+    //const canvasHeight = 720;
     const backgroundImage = "/images/YTThumbnailBackground.png";
     const foregroundImage = "/images/YTThumbnailFrontground.png";
+    const canvasWidth = 1280;
+    const canvasHeight = 720;
+
     
     let fontSize = 70;
+
+    useImperativeHandle(ref, () => ({
+        generateThumbnail: handleConfirm,
+        getCanvasDataURL: () => canvasRef.current?.toDataURL("image/png"),
+        setDataFromApi: (data) => {
+            console.log("Full data from API:", data);
+            setPlayer1Name(data.games[0].selections[0].entrant.name || "Unknown");
+            setPlayer2Name(data.games[0].selections[1].entrant.name || "Unknown");
+            setSelectedCharacter1(striveCharacterMap[data.games[0].selections[0].selectionValue] || "Unknown Character")
+            setSelectedCharacter2(striveCharacterMap[data.games[0].selections[1].selectionValue] || "Unknown Character")
+            console.log("Player 1 character:", selectedCharacter1)
+            console.log("Player 2 character:", selectedCharacter2)
+            setTournamentName(data.tournamentName || "Untitled");
+            setTournamentDate(data.tournamentDate || "Date TBD");
+            if (data.fullRoundText === "Losers Round 1") {
+                setPartOfBracket("Losers Eighths");
+            }
+            else {
+                setPartOfBracket(data.fullRoundText || "Unknown");
+            }
+            setDataReady(true); // triggers useEffect
+        },
+      }));
+
+    useEffect(() => {
+    if (dataReady) {
+        handleConfirm();
+        setDataReady(false); // reset for future updates
+    }
+    }, [player1Name, player2Name, tournamentName, tournamentDate, partOfBracket, selectedCharacter1, selectedCharacter2]);
     
     const loadImage = (src) => {
         return new Promise((resolve, reject) => {
@@ -48,10 +87,17 @@ const ThumbnailMakerOld = (props, ref) => {
         const ctx = canvas.getContext("2d");
 
         try {
+            let imagePath1 = `/images/${gamePlayed}/${selectedCharacter1}.png`
+            let imagePath2 = `/images/${gamePlayed}/${selectedCharacter2}.png`
+            //let workingImagePath = "/images/GGST/Ky_Kiske.png";
+            console.log("Current path:", imagePath1)
+            //console.log("Path that works:", workingImagePath)
             const [imgBG, img1, img2, imgFG] = await Promise.all([
                 loadImage(backgroundImage),
-                loadImage(imageMap[selectedOption1]),
-                loadImage(imageMap[selectedOption2]),
+                //loadImage(imageMap[selectedCharacter1]),
+                loadImage(imagePath1),
+                loadImage(imagePath2),
+                //loadImage(imageMap[selectedCharacter2]),
                 loadImage(foregroundImage),
             ])
             /*
@@ -64,10 +110,18 @@ const ThumbnailMakerOld = (props, ref) => {
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
 
+            const scaleFactor = 0.55;
+            const scaledWidth1 = img1.width * scaleFactor;
+            const scaledHeight1 = img1.height * scaleFactor;
+            const scaledWidth2 = img2.width * scaleFactor;
+            const scaledHeight2 = img2.height * scaleFactor;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(imgBG, 0, 0, canvas.width, canvasHeight);
-            ctx.drawImage(img1, -75, 100);  // Left character
-            ctx.drawImage(img2, 675, 100);  // Right character
+            //ctx.drawImage(img1, -75, 100);  // Left character
+            //ctx.drawImage(img2, 675, 100);  // Right character
+            ctx.drawImage(img1, -175, 125, scaledWidth1, scaledHeight1);  // Left character (scaled)
+            ctx.drawImage(img2, 630, 125, scaledWidth2, scaledHeight2);  // Right character (scaled)
             ctx.drawImage(imgFG, 0, 0, canvas.width, canvas.height);  // Overlay
 
             ctx.fillStyle = 'black';
@@ -101,10 +155,23 @@ const ThumbnailMakerOld = (props, ref) => {
     }
 
 
+    /*
     useImperativeHandle(ref, () => ({
         generateThumbnail: handleConfirm,
-        getCanvasDataURL: () => canvasRef.current?.toDataURL("image/png")
+        getCanvasDataURL: () => canvasRef.current?.toDataURL("image/png"),
+        setDataFromApi: (data) => {
+            if (data.tournamentName) setTournamentName(data.tournamentName);
+            if (data.tournamentDate) setTournamentDate(data.tournamentDate);
+            if (data.partOfBracket) setPartOfBracket(data.partOfBracket);
+            if (data.player1Name) setPlayer1Name(data.player1Name);
+            if (data.player2Name) setPlayer2Name(data.player2Name);
+            if (data.character1) setSelectedCharacter1(data.character1);
+            if (data.character2) setSelectedCharacter2(data.character2);
+          }
     }));
+    */
+
+    
 
 
     return (
@@ -158,7 +225,7 @@ const ThumbnailMakerOld = (props, ref) => {
                 style={{ marginLeft: "10px", padding: "5px", width: "250px" }}
             />
             <select //value={testVariable}
-            onChange={(e) => setSelectedOption1(e.target.value)}>
+            onChange={(e) => setSelectedCharacter1(e.target.value)}>
                 <option value="">-- Select --</option>
                 <option value="SF6_Cammy">Cammy</option>
                 <option value="SF6_Guile">Guile</option>
@@ -177,7 +244,7 @@ const ThumbnailMakerOld = (props, ref) => {
                 placeholder="Enter player 2 name"
                 style={{ marginLeft: "10px", padding: "5px", width: "250px" }}
             />
-            <select onChange={(e) => setSelectedOption2(e.target.value)}>
+            <select onChange={(e) => setSelectedCharacter2(e.target.value)}>
                 <option value="">-- Select --</option>
                 <option value="SF6_Cammy">Cammy</option>
                 <option value="SF6_Guile">Guile</option>
@@ -191,7 +258,7 @@ const ThumbnailMakerOld = (props, ref) => {
         </div>
     )
 
-}
+});
 
-export default forwardRef(ThumbnailMakerOld);
+export default ThumbnailMakerOld;
 //export default ThumbnailMakerOld;
