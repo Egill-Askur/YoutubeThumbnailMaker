@@ -1,3 +1,19 @@
+# IMPORTANT - CORS ANYWHERE IS REQUIRED TO FETCH THROUGH LOCALHOST
+
+^^ Mikilvægt að lesa þetta að ofan ^^
+
+Dæmi um hlekk sem má nota sem start.gg URL:
+https://www.start.gg/tournament/n-h-ggur-26-guilty-gear-strive/event/guilty-gear-strive
+
+
+
+
+
+
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
