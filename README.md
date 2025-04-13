@@ -6,8 +6,10 @@ Dæmi um hlekk sem má nota sem start.gg URL:
 https://www.start.gg/tournament/n-h-ggur-26-guilty-gear-strive/event/guilty-gear-strive
 
 
-
-
+Forritið er keyrt með fylgjandi:
+npm install
+npm start
+(kveikja á CORS Anywhere)
 
 
 
